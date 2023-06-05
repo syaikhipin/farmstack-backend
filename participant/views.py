@@ -18,7 +18,6 @@ import psycopg2
 import requests
 import xlwt
 from rest_framework.generics import get_object_or_404
-
 from accounts.models import User
 from core.constants import Constants
 from core.utils import (
@@ -50,8 +49,6 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet, ViewSet
 from uritemplate import partial
-
-from participant.services.support_ticket_services import SupportTicketServices
 from utils import string_functions
 from utils.connector_utils import run_containers, stop_containers
 
@@ -59,9 +56,9 @@ from participant.models import (
     Connectors,
     ConnectorsMap,
     Department,
-    Project,
-    SupportTicket, SupportTicketV2,
-)
+    Project
+    , SupportTicketV2,
+    SupportTicket)
 from participant.serializers import (
     ConnectorListSerializer,
     ConnectorsConsumerRelationSerializer,
@@ -85,8 +82,7 @@ from participant.serializers import (
     ParticipantSupportTicketSerializer,
     ProjectDepartmentSerializer,
     ProjectSerializer,
-    TicketSupportSerializer, SupportTicketV2Serializer,
-)
+    TicketSupportSerializer, SupportTicketV2Serializer,)
 from utils.jwt_services import http_request_mutation
 
 LOGGER = logging.getLogger(__name__)
@@ -1721,6 +1717,7 @@ class DataBaseViewSet(GenericViewSet):
             return Response({"message": f"API Response: {e}"}, status=status.HTTP_400_BAD_REQUEST)
 
 
+
 class SupportTicketV2ModelViewSet(GenericViewSet):
     parser_class = JSONParser
     queryset = SupportTicketV2.objects.all()
@@ -1779,4 +1776,3 @@ class SupportTicketV2ModelViewSet(GenericViewSet):
     #     page = self.paginate_queryset(queryset)
     #     support_tickets_serializer = SupportTicketV2Serializer(page, many=True)
     #     return self.get_paginated_response(support_tickets_serializer.data)
-
