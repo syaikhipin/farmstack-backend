@@ -66,15 +66,15 @@ class UserSerializer(serializers.ModelSerializer):
 class UserUpdateSerializer(serializers.ModelSerializer):
     """UserUpdateSerializer"""
 
-    role = serializers.PrimaryKeyRelatedField(
-        queryset=UserRole.objects.all(),
-        required=True,
-    )
+    # role = serializers.PrimaryKeyRelatedField(
+    #     queryset=UserRole.objects.all(),
+    #     required=True,
+    # )
 
     class Meta:
         model = User
         fields = (
-            "email",
+            # "email",
             "first_name",
             "last_name",
             "phone_number",
