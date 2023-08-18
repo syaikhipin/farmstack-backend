@@ -42,7 +42,16 @@ NOSE_ARGS = [
     "--cover-html",
     "--cover-package=datahub,accounts,core, participants",
 ]
-# Application definition
+CELERY_IMPORTS = ('core.tasks')
+# CELERY_BROKER_URL = 'amqp://guest:guest@localhost:5672//'
+# BROKER_URL = 'pyamqp://guest@localhost//'
+CELERY_BROKER_URL = 'redis://redis:6379/0'  # Example for using Redis as the broker
+
+# settings.py
+# CELERY_BROKER_URL = 'redis://redis:6379/0'  # Example for using Redis as the broker
+
+# Set the broker URL to use Redis
+# BROKER_URL = 'redis://localhost:6379/0'
 
 INSTALLED_APPS = [
     "django_extensions",
@@ -62,7 +71,9 @@ INSTALLED_APPS = [
     "drf_spectacular_sidecar",
     "django_nose",
     "django_filters",
+    "celery",
     # custom apps
+    "core",
     "accounts",
     "datahub",
     "participant",
@@ -118,9 +129,9 @@ DATABASES = {
         "ENGINE": "django.db.backends.postgresql",
         "NAME": "postgres",
         "USER": os.environ.get("POSTGRES_USER", "postgres"),
-        "PASSWORD": os.environ.get("POSTGRES_PASSWORD", "test"),
-        "HOST": os.environ.get("POSTGRES_HOST", "db"),
-        "PORT": os.environ.get("POSTGRES_PORT", "5432"),
+        "PASSWORD": os.environ.get("POSTGRES_PASSWORD", "$farmstack@!21"),
+        "HOST": os.environ.get("POSTGRES_HOST", "datahubethdev.farmstack.co"),
+        "PORT": os.environ.get("POSTGRES_PORT", "7000"),
         "OPTIONS": {
             "client_encoding": "UTF8",
         },

@@ -3,18 +3,21 @@ version: '3'
 services:
   datahub-be:
     # restart: always
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
     command: >
       sh -c "python manage.py makemigrations &&
        python manage.py migrate &&
-       python manage.py loaddata db_scripts/userrole_fixture.yaml &&
-      python manage.py loaddata db_scripts/initial_data.yaml &&  python manage.py runserver 0.0.0.0:8000" 
-    # image: farmstack/datahub-be:local
+      python manage.py runserver 0.0.0.0:8000" 
+    # image: farmstack/celery:restapi
+    # volumes:
+    # - /core/settings.py:core/settings.py
     # container_name: datahub-be
     ports:
       - "8000:8000"
-    depends_on:
-      - db
+    # depends_on:
+    #   - db
     environment:
       POSTGRES_DB: postgres
       POSTGRES_USER: postgres
@@ -22,29 +25,58 @@ services:
       POSTGRES_HOST_AUTH_METHOD: trust
       SENDGRID_API_KEY: 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
       EMAIL_HOST_USER: varunramesh.07@gmail.com
-    links:
-      - db:db
+    # links:
+    #   - db:db
+    networks:
+      - postgresql-network
+  # db:
+  #   image: postgres
+  #   volumes:
+  #     - ./data/db:/var/lib/postgresql/data
+  #   environment:
+  #     - POSTGRES_DB=postgres
+  #     - POSTGRES_USER=postgres
+  #     - POSTGRES_PASSWORD=postgres
+  #     - "POSTGRES_HOST_AUTH_METHOD=trust"
+  #   hostname: postgres
+  #   ports:
+  #     - '5432:5432'
+  #   networks:
+  #     - postgresql-network
+  celeryworker:
+    build:
+      context: .
+      dockerfile: docker-celery
+    depends_on:
+      - redis
     networks:
       - postgresql-network
 
-  db:
-    image: postgres
-    volumes:
-      - ./data/db:/var/lib/postgresql/data
-    environment:
-      - POSTGRES_DB=postgres
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - "POSTGRES_HOST_AUTH_METHOD=trust"
-    hostname: postgres
+  celerybeat:
+    build:
+      context: .
+      dockerfile: docker-beat
+    depends_on:
+      - redis
+    networks:
+      - postgresql-network
+
+  redis:
+    image: redis:latest
     ports:
-      - '5432:5432'
+      - "6379:6379"
+    command: [ "redis-server", "--appendonly", "yes" ] # Enable append-only mode
+    volumes:
+      - redis_data:/data # Mount a volume for persistent data
+    environment:
+      REDIS_PASSWORD: mysecretpassword
     networks:
       - postgresql-network
-
 volumes:
   db_data:
     driver: local
+  redis_data:
+
 
 networks:
   postgresql-network:

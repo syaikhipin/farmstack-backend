@@ -7,6 +7,7 @@ import shutil
 import plazy
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
+from django.core.validators import URLValidator
 from django.utils.translation import gettext as _
 from rest_framework import serializers, status
 
@@ -24,10 +25,10 @@ from datahub.models import (
     DatasetV2,
     DatasetV2File,
     Organization,
+    Resource,
+    ResourceFile,
     StandardisationTemplate,
     UserOrganizationMap,
-    ResourceFile,
-    Resource,
 )
 from participant.models import Connectors, SupportTicket
 from utils.custom_exceptions import NotFoundException
@@ -42,8 +43,6 @@ from utils.validators import (
 )
 
 from .models import Policy, UsagePolicy
-from django.core.validators import URLValidator
-from django.core.exceptions import ValidationError
 
 LOGGER = logging.getLogger(__name__)
 
