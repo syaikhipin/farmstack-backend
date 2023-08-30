@@ -499,6 +499,12 @@ class SelfRegisterParticipantViewSet(GenericViewSet):
                 subject=Constants.PARTICIPANT_ORG_ADDITION_SUBJECT
                 + os.environ.get(Constants.DATAHUB_NAME, Constants.datahub_name),
             )
+        except IntegrityError as e:
+            LOGGER.error(e, exc_info=True)
+            return Response(e.message, status=status.HTTP_400_BAD_REQUEST)
+        except ValidationErr as e:
+            LOGGER.error(e, exc_info=True)
+            return Response(e.detail, status=status.HTTP_400_BAD_REQUEST)
         except Exception as error:
             LOGGER.error(error, exc_info=True)
             return Response({"message": ["An error occured"]}, status=status.HTTP_200_OK)
