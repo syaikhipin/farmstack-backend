@@ -42,16 +42,21 @@ NOSE_ARGS = [
     "--cover-html",
     "--cover-package=datahub,accounts,core, participants",
 ]
-CELERY_IMPORTS = ('core.tasks')
-# CELERY_BROKER_URL = 'amqp://guest:guest@localhost:5672//'
-# BROKER_URL = 'pyamqp://guest@localhost//'
-CELERY_BROKER_URL = 'redis://redis:6379/0'  # Example for using Redis as the broker
+CELERY_IMPORTS = ('celery_app.tasks')
+# from decouple import config
 
-# settings.py
-# CELERY_BROKER_URL = 'redis://redis:6379/0'  # Example for using Redis as the broker
+# DEBUG = config("DEBUG", default=0)
 
-# Set the broker URL to use Redis
-# BROKER_URL = 'redis://localhost:6379/0'
+
+# add our newly installed packages to INSTALLED_APPS
+
+# save Celery task results in Django's database
+# CELERY_RESULT_BACKEND = "django-db"
+
+# # This configures Redis as the datastore between Django + Celery
+# CELERY_BROKER_URL = config('CELERY_BROKER_REDIS_URL', default='redis://localhost:6379')
+# if you out to use os.environ the config is:
+# CELERY_BROKER_URL = os.environ.get('CELERY_BROKER_REDIS_URL', 'redis://localhost:6379')
 
 INSTALLED_APPS = [
     "django_extensions",
@@ -71,14 +76,14 @@ INSTALLED_APPS = [
     "drf_spectacular_sidecar",
     "django_nose",
     "django_filters",
-    "celery",
     # custom apps
     "core",
     "accounts",
     "datahub",
     "participant",
     "microsite",
-    "connectors"
+    "connectors",
+    # "celery_app"
 ]
 # Use nose to run all tests
 TEST_RUNNER = "django_nose.NoseTestSuiteRunner"
@@ -123,6 +128,11 @@ WSGI_APPLICATION = "core.wsgi.application"
 
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
+CELERY_BROKER_URL = 'redis://0.0.0.0:6379/0'  # Update with your broker URL
+CELERY_RESULT_BACKEND = 'redis://0.0.0.0:6379/0'  # Update with your result backend URL
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
 
 DATABASES = {
     "default": {

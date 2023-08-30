@@ -4,10 +4,13 @@ import os
 
 # from asyncio import exceptions
 from asyncio.log import logger
+from sqlite3 import IntegrityError
+from xml.dom import ValidationErr
 
 from django.conf import settings
 from django.core.cache import cache
 from django.db import transaction
+from django.db.utils import IntegrityError
 from django.shortcuts import render
 from rest_framework import serializers, status
 from rest_framework.decorators import action, permission_classes
@@ -499,12 +502,6 @@ class SelfRegisterParticipantViewSet(GenericViewSet):
                 subject=Constants.PARTICIPANT_ORG_ADDITION_SUBJECT
                 + os.environ.get(Constants.DATAHUB_NAME, Constants.datahub_name),
             )
-        except IntegrityError as e:
-            LOGGER.error(e, exc_info=True)
-            return Response(e.message, status=status.HTTP_400_BAD_REQUEST)
-        except ValidationErr as e:
-            LOGGER.error(e, exc_info=True)
-            return Response(e.detail, status=status.HTTP_400_BAD_REQUEST)
         except Exception as error:
             LOGGER.error(error, exc_info=True)
             return Response({"message": ["An error occured"]}, status=status.HTTP_200_OK)

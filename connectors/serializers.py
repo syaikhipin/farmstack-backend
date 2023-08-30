@@ -2,7 +2,7 @@ import json
 import os
 
 import pandas as pd
-from django.db.models import DEFERRED, Count, F, Q
+from django.db.models import DEFERRED, Count, F, Min, Q, Subquery
 from rest_framework import serializers
 
 from accounts.models import User
@@ -11,7 +11,6 @@ from core import settings
 from core.constants import Constants
 from datahub.models import DatasetV2, DatasetV2File, Organization, UserOrganizationMap
 from datahub.serializers import DatasetV2FileSerializer
-from django.db.models import Subquery, Min
 
 
 class OrganizationRetriveSerializer(serializers.ModelSerializer):
@@ -21,6 +20,7 @@ class OrganizationRetriveSerializer(serializers.ModelSerializer):
             "org_email",
             "org_description",
             "name",
+            'logo'
         ]
 
 class UserOrganizationMapSerializer(serializers.ModelSerializer):

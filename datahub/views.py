@@ -1,22 +1,21 @@
 import ast
 import csv
-from datetime import timedelta, timezone
 import json
 import logging
 import operator
 import os
 import re
 import shutil
-import time
-import numpy as np
 import sys
+import time
 from calendar import c
+from datetime import timedelta, timezone
 from functools import reduce
 from pickle import TRUE
 from urllib.parse import unquote
-import json
+
 import django
-from jsonschema import ValidationError
+import numpy as np
 import pandas as pd
 from django.conf import settings
 from django.contrib.admin.utils import get_model_from_relation
@@ -37,17 +36,18 @@ from django.db.models import (
     Value,
 )
 from django.db.models.functions import Concat
-from rest_framework.exceptions import ValidationError
 
 # from django.db.models.functions import Index, Substr
 from django.http import JsonResponse
 from django.shortcuts import render
 from drf_braces.mixins import MultipleSerializersViewMixin
+from jsonschema import ValidationError
 from psycopg2 import connect
 from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 from python_http_client import exceptions
 from rest_framework import generics, pagination, status
 from rest_framework.decorators import action
+from rest_framework.exceptions import ValidationError
 from rest_framework.parsers import JSONParser, MultiPartParser
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
@@ -69,6 +69,7 @@ from core.utils import (
     Utils,
     csv_and_xlsx_file_validatation,
     date_formater,
+    generate_api_key,
     read_contents_from_csv_or_xlsx_file,
 )
 from datahub.models import (
@@ -77,9 +78,9 @@ from datahub.models import (
     DatasetV2,
     DatasetV2File,
     Organization,
+    Resource,
     StandardisationTemplate,
     UserOrganizationMap,
-    Resource,
 )
 from datahub.serializers import (
     DatahubDatasetsSerializer,
@@ -100,6 +101,7 @@ from datahub.serializers import (
     PolicyDocumentSerializer,
     RecentDatasetListSerializer,
     RecentSupportTicketSerializer,
+    ResourceSerializer,
     StandardisationTemplateUpdateSerializer,
     StandardisationTemplateViewSerializer,
     TeamMemberCreateSerializer,
@@ -108,7 +110,6 @@ from datahub.serializers import (
     TeamMemberUpdateSerializer,
     UserOrganizationCreateSerializer,
     UserOrganizationMapSerializer,
-    ResourceSerializer,
 )
 from participant.models import SupportTicket
 from participant.serializers import (
@@ -122,13 +123,12 @@ from utils.jwt_services import http_request_mutation
 
 from .models import Policy, ResourceFile, UsagePolicy
 from .serializers import (
+    APIBuilderSerializer,
     PolicySerializer,
     ResourceFileSerializer,
     UsagePolicyDetailSerializer,
     UsagePolicySerializer,
-    APIBuilderSerializer,
 )
-from core.utils import generate_api_key
 
 LOGGER = logging.getLogger(__name__)
 
@@ -273,7 +273,7 @@ class OrganizationViewSet(GenericViewSet):
             user_obj = User.objects.get(id=pk, status=True)
             user_org_queryset = UserOrganizationMap.objects.prefetch_related(
                 Constants.USER, Constants.ORGANIZATION
-            ).filter(organization__status=True, user=pk)
+            ).filter(user=pk)
 
             if not user_org_queryset:
                 data = {Constants.USER: {"id": user_obj.id}, Constants.ORGANIZATION: "null"}

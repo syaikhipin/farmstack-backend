@@ -1,18 +1,21 @@
+# Use an official Python runtime as the base image
+FROM python:3.8
 
-# Dockerfile-celery
-
-# Use the same base image as your Django app
-FROM python:3.10
+# Set environment variables
+ENV PYTHONUNBUFFERED 1
 
 # Set the working directory
 WORKDIR /app
 
-# Copy your project files and install requirements
-COPY . /app
+# Install dependencies
+COPY requirements_celery.txt /app/
 RUN python -m pip install --upgrade pip \
-    && pip install python-ldap==3.3.1 \
+    # && pip install python-ldap==3.3.1 \
     && pip install --upgrade pyopenssl \
-    && pip install -r requirements.txt
+    && pip install -r requirements_celery.txt
 
-# Run the Celery worker
-CMD ["celery", "-A", "core", "worker", "--loglevel=info"]
+# Copy the Celery app code
+COPY ./celery_app /app/
+
+# Define the command to start the Celery worker
+CMD ["celery", "-A", "celery_app", "worker", "--loglevel=info"]
