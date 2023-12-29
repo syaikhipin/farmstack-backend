@@ -8,11 +8,11 @@ services:
       sh -c "python manage.py makemigrations &&
        python manage.py migrate &&
        python manage.py loaddata db_scripts/userrole_fixture.yaml &&
-      python manage.py loaddata db_scripts/initial_data.yaml &&  python manage.py runserver 0.0.0.0:8000" 
+      python manage.py loaddata db_scripts/initial_data.yaml &&  python manage.py runserver 0.0.0.0:10000" 
     # image: farmstack/datahub-be:local
     # container_name: datahub-be
     ports:
-      - "8000:8000"
+      - "10000:10000"
     depends_on:
       - db
     environment:
